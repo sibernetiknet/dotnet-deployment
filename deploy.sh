@@ -21,7 +21,7 @@ SDKCHECK(){
 #.NET SDK Control
 SDKCHECK
 
-
+#Read project path
 while true; do
   read -p "Enter the project full path of the folder: " PROJECT_PATH
 
@@ -32,6 +32,21 @@ while true; do
     PRINTMESSAGE "Folder does not exist: $PROJECT_PATH"
   fi
 done
+
+#Read project publis path
+while true; do
+  read -p "Enter the full path folder to save the project to be published: " PROJECT_PUBLISH_PATH
+
+  if [ -d "$PROJECT_PUBLISH_PATH" ]; then
+    LOGMESSAGE "Folder exist."
+    break
+  else
+    PRINTMESSAGE "Folder does not exist: $PROJECT_PUBLISH_PATH"
+  fi
+done
+
+
+
 
 
 
