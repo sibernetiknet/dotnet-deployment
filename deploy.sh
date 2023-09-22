@@ -31,6 +31,24 @@ PUBLISHPROJECT(){
     dotnet publish --configuration Release --output $PROJECT_PUBLISH_PATH .
 }
 
+TRANSFER(){
+    if [ "$USE_IIS" != "${USE_IIS#[Yy]}" ]; then
+        ssh $REMOTE_USER@$REMOTE_HOST 'iisreset /stop'
+        PRINTMESSAGE "IIS stopped."
+        else
+            LOGMESSAGE "ISS not using."
+    fi
+
+    scp -r $PROJECT_PUBLISH_PATH/* --exclude=wwwroot --exclude=.DS_Store $REMOTE_USER@$REMOTE_HOST:$REMOTE_PROJECT_PATH
+
+    if [ "$USE_IIS" != "${USE_IIS#[Yy]}"  ]; then
+        ssh $REMOTE_USER@$REMOTE_HOST 'iisreset /start'
+        PRINTMESSAGE "IIS started."
+        else
+        LOGMESSAGE "ISS not using."
+    fi
+}
+
 #.NET SDK Control
 SDKCHECK
 
@@ -75,7 +93,7 @@ done
 
 #Read IIS information
 while true; do
-  read -p "Are you using IIS? (y/n) : " USE_IIS
+  read -p "Do you want to restart the IIS service? (y/n) : " USE_IIS
 
     case $USE_IIS in 
         [yY] ) break;;
@@ -85,11 +103,27 @@ while true; do
 
 done
 
+#Read remote desktop website folder
+while true; do
+  read -p "Enter remote desktop website folder path : " REMOTE_PROJECT_PATH
+
+    if ssh $REMOTE_USER@$REMOTE_HOST "powershell -Command "Test-Path -Path ''$REMOTE_PROJECT_PATH''"" | grep 'True'
+        then
+        PRINTMESSAGE "Remote project folder path exist."
+        break;
+        else
+        PRINTMESSAGE "Remote project folder path not found. Please enter again."
+    fi
+done
 
 # File transfer operations
 PRINTMESSAGE "File transfer operation begins. Please wait."
 
 PUBLISHPROJECT
+TRANSFER
+
+PRINTMESSAGE "File transfer operation finished. Please check your website."
+
 
 
 
