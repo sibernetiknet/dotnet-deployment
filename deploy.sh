@@ -24,6 +24,13 @@ SSHCONNECTIONTEST(){
     return $?
 }
 
+PUBLISHPROJECT(){
+    cd $PROJECT_PATH
+    dotnet clean
+    dotnet build
+    dotnet publish --configuration Release --output $PROJECT_PUBLISH_PATH .
+}
+
 #.NET SDK Control
 SDKCHECK
 
@@ -65,6 +72,13 @@ while true; do
     PRINTMESSAGE "Connection failed. Please enter remote desktop information."
   fi
 done
+
+
+
+# File transfer operations
+PRINTMESSAGE "File transfer operation begins. Please wait."
+
+PUBLISHPROJECT
 
 
 
