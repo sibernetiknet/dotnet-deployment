@@ -5,6 +5,7 @@ HOME_DIRECTORY=~
 PRINTMESSAGE(){
     echo -e "\n [*] $1 \n"
 }
+
 LOGMESSAGE(){
     echo -e "\n [**] Log: $1 \n"
 }
@@ -16,6 +17,11 @@ SDKCHECK(){
     PRINTMESSAGE "The .NET SDK is not installed. Visit: https://dotnet.microsoft.com/en-us/download"
     exit
     fi
+}
+
+SSHCONNECTIONTEST(){
+    ssh -q -o ConnectTimeout=10 $REMOTE_USER@$REMOTE_HOST exit
+    return $?
 }
 
 #.NET SDK Control
@@ -33,7 +39,7 @@ while true; do
   fi
 done
 
-#Read project publis path
+#Read project publish path
 while true; do
   read -p "Enter the full path folder to save the project to be published: " PROJECT_PUBLISH_PATH
 
@@ -44,6 +50,29 @@ while true; do
     PRINTMESSAGE "Folder does not exist: $PROJECT_PUBLISH_PATH"
   fi
 done
+
+#Read remote user and host
+while true; do
+  read -p "Enter remote user : " REMOTE_USER
+  read -p "Enter remote host : " REMOTE_HOST
+
+  SSHCONNECTIONTEST
+
+  if [ $? -eq 0 ]; then
+    PRINTMESSAGE "SSH Connection created."
+    break
+  else
+    PRINTMESSAGE "Connection failed. Please enter remote desktop information."
+  fi
+done
+
+
+
+
+
+
+
+
 
 
 
