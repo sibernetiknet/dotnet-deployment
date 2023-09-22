@@ -73,12 +73,25 @@ while true; do
   fi
 done
 
+#Read IIS information
+while true; do
+  read -p "Are you using IIS? (y/n) : " USE_IIS
+
+    case $USE_IIS in 
+        [yY] ) break;;
+        [nN] ) break;;
+        * ) PRINTMESSAGE "Invalid response. Try again please."
+    esac
+
+done
 
 
 # File transfer operations
 PRINTMESSAGE "File transfer operation begins. Please wait."
 
 PUBLISHPROJECT
+
+
 
 
 
