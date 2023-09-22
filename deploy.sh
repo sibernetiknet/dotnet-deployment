@@ -1,5 +1,7 @@
 #Path variables
 HOME_DIRECTORY=~
+SCRIPT_DIRECTORY="$(dirname "$(readlink -f "$0")")"
+SAVED_DATA_DIRECTORY=$SCRIPT_DIRECTORY/saved-keys
 
 #Functions
 PRINTMESSAGE(){
@@ -47,6 +49,15 @@ TRANSFER(){
         else
         LOGMESSAGE "ISS not using."
     fi
+}
+
+SAVE_KEYS(){
+    if [ ! -d "$SAVED_DATA_DIRECTORY" ]; then
+        mkdir "$SAVED_DATA_DIRECTORY"
+    fi
+    
+    read -p "How would you like to define the file to save? : " KEYS_NAME
+    typeset -p PROJECT_PATH PROJECT_PUBLISH_PATH REMOTE_USER REMOTE_HOST USE_IIS REMOTE_PROJECT_PATH > $SAVED_DATA_DIRECTORY/$KEYS_NAME.sh
 }
 
 #.NET SDK Control
@@ -115,6 +126,19 @@ while true; do
         PRINTMESSAGE "Remote project folder path not found. Please enter again."
     fi
 done
+
+#Read data save information
+while true; do
+    read -p "Is your information stored for later retrieval? (y/n) : " SAVE_DATA
+
+    case $SAVE_DATA in 
+        [yY] ) SAVE_KEYS
+            break;;
+        [nN] ) break;;
+        * ) PRINTMESSAGE "Invalid response. Try again please."
+    esac
+done
+
 
 # File transfer operations
 PRINTMESSAGE "File transfer operation begins. Please wait."
